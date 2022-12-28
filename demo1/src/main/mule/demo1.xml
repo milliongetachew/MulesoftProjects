@@ -5,8 +5,40 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="19c694e4-a807-4af0-ab29-80dd8d8452ad" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="demo1Flow1" doc:id="0673cea7-ae99-45b9-8460-937414d60e93" >
+		<ee:transform doc:name="Transform Message" doc:id="8c7e472a-8838-4b47-b964-4a7f3c696b8f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
 	<flow name="demo1Flow" doc:id="ef657cac-5a66-44f2-93f5-b9e95cc11121" >
-		<http:listener doc:name="Listener" doc:id="6340fc48-e6d1-4f86-94a3-3c5fee2de2ba" />
-		<ee:transform doc:name="Transform Message" doc:id="1d619db3-bb06-4a75-88bd-bc7ac0bdc2ad" />
+		<http:listener doc:name="Listener" doc:id="6340fc48-e6d1-4f86-94a3-3c5fee2de2ba" config-ref="HTTP_Listener_config" path="/test"/>
+		<ee:transform doc:name="Transform Message" doc:id="1d619db3-bb06-4a75-88bd-bc7ac0bdc2ad" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+	{"message" : "this is file is created"}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="e30f38d0-42b8-4d5f-8592-f7312f2efd9f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
 </mule>
