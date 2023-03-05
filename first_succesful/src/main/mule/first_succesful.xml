@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="199a9bc9-cdc7-48ff-b0c8-1fee4c976649" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	
+	<flow name="first_successfulFlow" doc:id="599bf3fe-18ec-49af-a870-21060a242851" >
+		<http:listener doc:name="Listener" doc:id="1537d3fb-a179-470e-a344-7f3ff0ffa4c2" config-ref="HTTP_Listener_config" path="first_successful"/>
+		<first-successful doc:name="First Successful" doc:id="9255e31f-eb91-4819-a4db-b973c40bd013" >
+			<route >
+				<db:select doc:name="MySQL" doc:id="724bdd52-4a44-424f-8e21-8c17ff5405ba" config-ref="MySQL_Database_Config">
+					<db:sql ><![CDATA[select * from category;]]></db:sql>
+				</db:select>
+				<ee:transform doc:name="Transform Message" doc:id="d6139ba3-885d-4e61-84b7-4637a8b82756" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="3b29f63d-c3ac-4215-9b39-dad0402611d3" message="MySQL success!"/>
+			</route>
+			<route >
+				<db:select doc:name="postgres" doc:id="53b09699-cfc0-41ba-ac6f-74cd01385a73" config-ref="Postgres_Database_Config">
+					<db:sql ><![CDATA[select * from category;]]></db:sql>
+				</db:select>
+				<ee:transform doc:name="Transform Message" doc:id="d2ff9fc8-0c7d-494a-a836-f54b5e61c235" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="6b02d40a-36bf-4fcb-a430-a592ef66a629" message="Postgres success!"/>
+			</route>
+		</first-successful>
+	</flow>
+</mule>
